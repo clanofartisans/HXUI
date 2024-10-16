@@ -60,10 +60,10 @@ enemylist.DrawWindow = function(settings)
 		local numTargets = 0;
 		for k,v in pairs(allClaimedTargets) do
 			local ent = GetEntity(k);
-			if (v ~= nil and ent ~= nil and GetIsValidMob(k)) then
+            if (v ~= nil and ent ~= nil and GetIsValidMob(k) and ent.HPPercent > 0 and ent.Name ~= nil) then
 				-- Obtain and prepare target information..
 				local targetNameText = ent.Name;
-				if (targetNameText ~= nil) then
+				-- if (targetNameText ~= nil) then
 
 					local color = GetColorOfTargetRGBA(ent, k);
 					imgui.Dummy({0,settings.entrySpacing});
@@ -91,10 +91,21 @@ enemylist.DrawWindow = function(settings)
 					end
 
 					-- Display the targets information..
-					imgui.TextColored(color, targetNameText);
-					local percentText  = ('%.f'):fmt(ent.HPPercent);
-					local x, _  = imgui.CalcTextSize(percentText);
-					local fauxX, _  = imgui.CalcTextSize('100');
+					imgui.TextColored(color, ent.Name);
+					local percentText = '';
+					local fauxX = 0;
+					if (gConfig.showEnemyDistance and gConfig.showEnemyHPPText) then
+						percentText = 'D:' .. ('%.1f'):fmt(math.sqrt(ent.Distance)) .. ' %:' .. ('%.f'):fmt(ent.HPPercent);
+						fauxX, _ = imgui.CalcTextSize('D:1000 %:100');
+					elseif (gConfig.showEnemyDistance) then
+						percentText = ('%.1f'):fmt(math.sqrt(ent.Distance));
+						fauxX, _ = imgui.CalcTextSize('1000');
+					elseif (gConfig.showEnemyHPPText) then
+						percentText = ('%.f'):fmt(ent.HPPercent);
+						fauxX, _ = imgui.CalcTextSize('100');
+					end
+
+					local x, _ = imgui.CalcTextSize(percentText);
 
 					-- Draw buffs and debuffs
 					local buffIds = debuffHandler.GetActiveDebuffs(AshitaCore:GetMemoryManager():GetEntity():GetServerId(k));
@@ -122,7 +133,7 @@ enemylist.DrawWindow = function(settings)
 					if (numTargets >= gConfig.maxEnemyListEntries) then
 						break;
 					end
-				end
+				-- end
 			else
 				allClaimedTargets[k] = nil;
 			end

@@ -67,30 +67,41 @@ local function ApplyMessage(debuffs, action)
                     debuffs[target.Id][buffId] = now + 120
                 elseif spell == 254 or spell == 276 then -- blind/blind2
                     debuffs[target.Id][buffId] = now + 180
+                elseif spell == 341 or spell == 344 or spell == 347 then -- ninjutsu debuffs: ichi
+                    debuffs[target.Id][buffId] = now + 180
+                elseif spell == 342 or spell == 345 or spell == 348 then -- ninjutsu debuffs: ni
+                    debuffs[target.Id][buffId] = now + 300
+                elseif spell == 23 then -- dia
+                    debuffs[target.Id][buffId] = now + 60
+                elseif spell == 24 then -- dia2
+                    debuffs[target.Id][buffId] = now + 120
+                elseif spell == 230 then -- bio
+                    debuffs[target.Id][buffId] = now + 60
+                elseif spell == 231 then -- bio2
+                    debuffs[target.Id][buffId] = now + 120
                 elseif spell == 59 or spell == 359 then -- silence/ga
                     debuffs[target.Id][buffId] = now + 120
-                elseif spell == 253 or spell == 259 or spell == 273 or spell == 274 then -- sleep/2/ga/2
+                elseif spell == 253 or spell == 273 or spell == 363 then -- sleep/ga
+                    debuffs[target.Id][buffId] = now + 60
+                elseif spell == 259 or spell == 274 or spell == 364 then -- sleep2/ga2
                     debuffs[target.Id][buffId] = now + 90
+                elseif spell == 376 or spell == 463 then -- foe/horde lullaby
+                    debuffs[target.Id][buffId] = now + 36
                 elseif spell == 258 or spell == 362 then -- bind
                     debuffs[target.Id][buffId] = now + 60
                 elseif spell == 252 then -- stun
                     debuffs[target.Id][buffId] = now + 5
-                elseif spell <= 229 and spell >= 220 then -- poison/2
+                elseif spell == 220 then -- poison
+                    debuffs[target.Id][buffId] = now + 90
+                elseif spell == 221 then -- poison2
                     debuffs[target.Id][buffId] = now + 120
-                -- Elemental debuffs
-                elseif spell == 239 then -- shock
+                elseif spell >= 235 and spell <= 240 then -- elemental debuffs
                     debuffs[target.Id][buffId] = now + 120
-                elseif spell == 238 then -- rasp
-                    debuffs[target.Id][buffId] = now + 120
-                elseif spell == 237 then -- choke
-                    debuffs[target.Id][buffId] = now + 120
-                elseif spell == 236 then -- frost
-                    debuffs[target.Id][buffId] = now + 120
-                elseif spell == 235 then -- burn
-                    debuffs[target.Id][buffId] = now + 120
-                elseif spell == 240 then -- drown
-                    debuffs[target.Id][buffId] = now + 120
-                else                                        -- Handle unknown status effect @ 5 minutes
+                elseif spell >= 454 and spell <= 461 then -- threnodies
+                    debuffs[target.Id][buffId] = now + 78
+                elseif spell == 422 or spell == 421 then -- elegies
+                    debuffs[target.Id][buffId] = now + 216
+                else -- Handle unknown status effect @ 5 minutes
                     debuffs[target.Id][buffId] = now + 300;
                 end
             end
@@ -132,12 +143,14 @@ debuffHandler.GetActiveDebuffs = function(serverId)
         return nil
     end
     local returnTable = {};
+    local returnTable2 = {};
     for k,v in pairs(debuffHandler.enemies[serverId]) do
         if (v ~= 0 and v > os.time()) then
             table.insert(returnTable, k);
+            table.insert(returnTable2, v - os.time());
         end
     end
-    return returnTable;
+    return returnTable, returnTable2;
 end
 
 return debuffHandler;
